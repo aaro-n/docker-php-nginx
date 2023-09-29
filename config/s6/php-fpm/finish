@@ -1,0 +1,2 @@
+#!/bin/sh
+pkill -TERM "php-fpm${PHP_VERSION}"

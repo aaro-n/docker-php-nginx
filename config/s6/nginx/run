@@ -1,0 +1,29 @@
+#!/bin/sh
+
+# 等待5秒
+sleep 5
+
+# 从环境变量中读取值
+NGINX_ROOT_HTML="$NGINX_ROOT_HTML"
+NGINX_PORT="$NGINX_PORT"
+PHP_VERSION="$PHP_VERSION"
+
+# 替换配置文件中的占位符
+sed -i "s#NGINX_PORT#$NGINX_PORT#g" /etc/nginx/sites-enabled/default
+sed -i "s#NGINX_ROOT_HTML#$NGINX_ROOT_HTML#g" /etc/nginx/sites-enabled/default
+sed -i "s#phpPHP_VERSION-fpm.sock#php${PHP_VERSION}-fpm.sock#g" /etc/nginx/sites-enabled/default
+
+if [ -n "$NGINX_ROOT_HTML" ]; then
+    if [ -n "$CHOWN_HTML" ]; then
+        chown -R www-data:www-data "$CHOWN_HTML"
+    else
+        chown -R www-data:www-data "$NGINX_ROOT_HTML"
+    fi
+fi
+
+# 标记脚本已经运行过，避免重复执行
+touch /var/run/chown_script_executed
+
+# 启动Nginx
+exec nginx -g "daemon off;"
+
